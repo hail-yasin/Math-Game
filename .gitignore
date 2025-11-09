@@ -1,1 +1,12 @@
+
+# Ignore Visual Studio build files
+x64/
+*.exe
+*.pdb
+*.ilk
+*.log
+*.tlog/
+*.idb
+*.user
+*.suo
 .vs/
