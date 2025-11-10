@@ -5,9 +5,7 @@ using namespace std;
 
 enum enQuestionsLevel { Easy = 1 , Med = 2 , Hard = 3 , Mix = 4};
 
-enum enOperationType { Add = 1 , Sub = 2 , Mul = 3 , Div = 4 , Mix = 5};
-
-enum enAnswerType { Right = 1 , Worng = 2};
+enum enOperationType { Add = 1 , Sub = 2 , Mul = 3 , Div = 4 , MixOP = 5};
 
 struct stRoundInfo
 {
@@ -15,9 +13,18 @@ struct stRoundInfo
 	short QuestionsLevel = 0;
 	int Number1 = 0;
 	int Number2 = 0;
-	short OperationType = 0;
+	short OperationType;
+	char Operation;
 	int PlayerAnswer = 0;
-	int RightAnswer = 0;
+	double RightAnswer = 0;
+};
+struct stGameInfo
+{
+	short NumberOfQuestion = 0;
+	string QuestionLevel = "";
+	string OperationType = "";
+	short NumberOfRight = 0;
+	short NumberOfWrong = 0;
 };
 
 int RandomNumber(int From, int To)
@@ -36,6 +43,7 @@ stRoundInfo ReadRoundInfo(stRoundInfo& RoundInfo)
 	cin >> RoundInfo.QuestionsLevel;
 	cout << "\nEnter Operation Type [1] Add, [2] Sub, [3] Mul, [4] Div [5] Mix ? ";
 	cin >> RoundInfo.OperationType;
+	cout << "\n\n\n";
 	
 	return RoundInfo;
 }
@@ -61,24 +69,35 @@ stRoundInfo GenerateQuestionsByLeveL(stRoundInfo& RoundInfo)
 	return RoundInfo;
 }
 
-stRoundInfo SelectOperation(stRoundInfo& RoundInfo)
+char SelectOperation(stRoundInfo& RoundInfo)
 {
-	if (RoundInfo.OperationType == enOperationType::Mix)
-		RoundInfo.OperationType = RandomNumber(1, 4);
+	short CurrentOperation = RoundInfo.OperationType;
 
+	if (CurrentOperation == enOperationType::MixOP)
+		CurrentOperation = RandomNumber(1, 4);
 
-	return RoundInfo;
+	switch (CurrentOperation)
+	{
+	case enOperationType::Add:
+		return '+';
+	case enOperationType::Sub:
+		return '-';
+	case enOperationType::Mul:
+		return '*';
+	case enOperationType::Div:
+		return '/';
+	}
 }
 
 stRoundInfo CalculateResult(stRoundInfo& RoundInfo)
 {
-	if (RoundInfo.OperationType == enOperationType::Add)
+	if (RoundInfo.Operation == '+')
 		RoundInfo.RightAnswer = RoundInfo.Number1 + RoundInfo.Number2;
-	else if (RoundInfo.OperationType == enOperationType::Sub)
+	else if (RoundInfo.Operation == '-')
 		RoundInfo.RightAnswer = RoundInfo.Number1 - RoundInfo.Number2;
-	else if (RoundInfo.OperationType == enOperationType::Mul)
+	else if (RoundInfo.Operation == '*')
 		RoundInfo.RightAnswer = RoundInfo.Number1 * RoundInfo.Number2;
-	else if (RoundInfo.OperationType == enOperationType::Div)
+	else if (RoundInfo.Operation == '/')
 		RoundInfo.RightAnswer = RoundInfo.Number1 / RoundInfo.Number2;
 
 	return RoundInfo;
@@ -88,7 +107,7 @@ void InsideRound( short RoundNumber ,stRoundInfo& RoundInfo)
 {
 	cout << "Question [" << RoundNumber << "/" << RoundInfo.HowManyRounds << "]\n\n";
 	cout << RoundInfo.Number1 << "\n";
-	cout << RoundInfo.Number2 << " " << char(RoundInfo.OperationType) << "\n\n";
+	cout <<  RoundInfo.Number2 << " " << RoundInfo.Operation << "\n\n";
 	cout << "---------\n";
 	cin >> RoundInfo.PlayerAnswer;
 }
@@ -103,38 +122,115 @@ void CheckPlayerAnswer(stRoundInfo RoundInfo)
 	}
 	else
 	{
-		cout << "Worng Answer :-(\n";
+		cout << "Wrong Answer :-(\n";
 		cout << "The right answer is : " << RoundInfo.RightAnswer << "\n\n\n";
 		system("color 4F");
 		cout << '\a';
 	}
 }
 
+string CheckLevel(stRoundInfo RoundInfo)
+{
+	switch (RoundInfo.QuestionsLevel)
+	{
+	case enQuestionsLevel::Easy:
+		return "Easy";
+	case enQuestionsLevel::Med:
+		return "Med";
+	case enQuestionsLevel::Hard:
+		return "Hard";
+	case enQuestionsLevel::Mix:
+		return "Mix";
+	}
+}
+
+string CheckOpType(stRoundInfo RoundInfo)
+{
+	switch (RoundInfo.OperationType)
+	{
+	case enOperationType::Add:
+		return "+";
+	case enOperationType::Sub:
+		return "-";
+	case enOperationType::Mul:
+		return "*";
+	case enOperationType::Div:
+		return "/";
+	case enOperationType::MixOP:
+		return "Mix";
+	}
+}
+
+void PrintGameOver(short NumberOfRightAnswers, short NumberOfWrongAnswers)
+{
+	cout << "--------------------------\n\n";
+	if (NumberOfRightAnswers > NumberOfWrongAnswers)
+	{
+		cout << "Final Result is Pass :-) \n\n";
+		system("color 2F");
+	}
+	else
+	{
+		cout << "Final Result is Fail :-(\n\n";
+		system("color 4F");
+	}
+	cout << "--------------------------\n\n";
+}
+
+void PrintFinalResult(stGameInfo GameInfo)
+{
+	cout << "Number of Questions: " << GameInfo.NumberOfQuestion;
+	cout << "\nQuestions Level    : " << GameInfo.QuestionLevel;
+	cout << "\nOpType             : " << GameInfo.OperationType;
+	cout << "\nNumber of Right Answers: " << GameInfo.NumberOfRight;
+	cout << "\nNumber of Wrong Answers: " << GameInfo.NumberOfWrong;
+	cout << "\n\n--------------------------\n\n";
+}
+
 void GamePlay()
 {
 	stRoundInfo RoundInfo;
+	stGameInfo GameInfo;
 	ReadRoundInfo(RoundInfo);
+	short NumberOfRightAnswers = 0, NumberOfWrongAnswers = 0;
 	
 
 
 	for (short RoundNumber = 1; RoundNumber <= RoundInfo.HowManyRounds; RoundNumber++)
 	{
 		GenerateQuestionsByLeveL(RoundInfo);
-		SelectOperation(RoundInfo);
+		RoundInfo.Operation = SelectOperation(RoundInfo);
 		CalculateResult(RoundInfo);
 		InsideRound(RoundNumber, RoundInfo);
 		CheckPlayerAnswer(RoundInfo);
+		if (RoundInfo.RightAnswer == RoundInfo.PlayerAnswer)
+			NumberOfRightAnswers++;
+		else
+			NumberOfWrongAnswers++;
 
 	}
+	
+	GameInfo.NumberOfQuestion = RoundInfo.HowManyRounds;
+	GameInfo.QuestionLevel = CheckLevel(RoundInfo);
+	GameInfo.OperationType = CheckOpType(RoundInfo);
+	GameInfo.NumberOfRight = NumberOfRightAnswers;
+	GameInfo.NumberOfWrong = NumberOfWrongAnswers;
+
+	PrintGameOver(NumberOfRightAnswers,NumberOfWrongAnswers);
+	PrintFinalResult(GameInfo);
 
 }
 
 void StartGame()
 {
 	char PlayAgain = 'Y';
+
 	do
 	{
+		system("cls");
+		system("color 0F");
 		 GamePlay();
+		 cout << "Do you want play again ? Y/N \n";
 		 cin >> PlayAgain;
 
 	} while (PlayAgain == 'Y' || PlayAgain == 'y');
