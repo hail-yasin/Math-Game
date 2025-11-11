@@ -129,36 +129,16 @@ void CheckPlayerAnswer(stRoundInfo RoundInfo)
 	}
 }
 
-string CheckLevel(stRoundInfo RoundInfo)
+string CheckLevelName(stRoundInfo RoundInfo)
 {
-	switch (RoundInfo.QuestionsLevel)
-	{
-	case enQuestionsLevel::Easy:
-		return "Easy";
-	case enQuestionsLevel::Med:
-		return "Med";
-	case enQuestionsLevel::Hard:
-		return "Hard";
-	case enQuestionsLevel::Mix:
-		return "Mix";
-	}
+	string LevelName[4] = { "Easy" , "Med" , "Hard" , "Mix" };
+	return LevelName[RoundInfo.QuestionsLevel - 1];
 }
 
-string CheckOpType(stRoundInfo RoundInfo)
+string CheckOpTypeName(stRoundInfo RoundInfo)
 {
-	switch (RoundInfo.OperationType)
-	{
-	case enOperationType::Add:
-		return "+";
-	case enOperationType::Sub:
-		return "-";
-	case enOperationType::Mul:
-		return "*";
-	case enOperationType::Div:
-		return "/";
-	case enOperationType::MixOP:
-		return "Mix";
-	}
+	string OpTypeName[5] = { "+" , "-" , "*" , "/" , "Mix" };
+	return OpTypeName[RoundInfo.OperationType - 1];
 }
 
 void PrintGameOver(short NumberOfRightAnswers, short NumberOfWrongAnswers)
@@ -167,12 +147,10 @@ void PrintGameOver(short NumberOfRightAnswers, short NumberOfWrongAnswers)
 	if (NumberOfRightAnswers > NumberOfWrongAnswers)
 	{
 		cout << "Final Result is Pass :-) \n\n";
-		system("color 2F");
 	}
 	else
 	{
 		cout << "Final Result is Fail :-(\n\n";
-		system("color 4F");
 	}
 	cout << "--------------------------\n\n";
 }
@@ -211,8 +189,8 @@ void GamePlay()
 	}
 	
 	GameInfo.NumberOfQuestion = RoundInfo.HowManyRounds;
-	GameInfo.QuestionLevel = CheckLevel(RoundInfo);
-	GameInfo.OperationType = CheckOpType(RoundInfo);
+	GameInfo.QuestionLevel = CheckLevelName(RoundInfo);
+	GameInfo.OperationType = CheckOpTypeName(RoundInfo);
 	GameInfo.NumberOfRight = NumberOfRightAnswers;
 	GameInfo.NumberOfWrong = NumberOfWrongAnswers;
 
